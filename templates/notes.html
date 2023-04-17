@@ -1,0 +1,107 @@
+
+<!--<!DOCTYPE html>-->
+<!--<html>-->
+<!--<head>-->
+<!--    <title>Notes</title>-->
+<!--    <meta charset="utf-8">-->
+<!--    <meta name="viewport" content="width=device-width, initial-scale=1">-->
+<!--    <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='css/style.css') }}" >-->
+<!--</head>-->
+<!--<body>-->
+<!--    <div class="container">-->
+<!--        <h1>Notes</h1>-->
+<!--            {% if message %}-->
+<!--        <p class="message">{{ message }}</p>-->
+<!--    {% endif %}-->
+<!--    <ul>-->
+<!--        {% for note in notes %}-->
+<!--            <li>-->
+<!--                <a href="{{ url_for('get_note', id=note.id) }}">{{ note.title }}</a>-->
+<!--                <span class="timestamp">{{ note.date_created|datetimeformat }}</span>-->
+<!--            </li>-->
+<!--        {% endfor %}-->
+<!--    </ul>-->
+
+<!--    <form method="post" action="{{ url_for('add_note') }}">-->
+<!--        {{ form.csrf_token }}-->
+
+<!--        <div class="form-group">-->
+<!--            {{ form.title.label }} {{ form.title }}-->
+<!--        </div>-->
+
+<!--        <div class="form-group">-->
+<!--            {{ form.content.label }} {{ form.content }}-->
+<!--        </div>-->
+
+<!--        <div class="form-group">-->
+<!--            <button type="submit">Add Note</button>-->
+<!--        </div>-->
+<!--    </form>-->
+<!--</div>-->
+<!--</body>-->
+<!--</html>-->
+
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Notes</title>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='css/style.css') }}" >
+    <script src="{{ url_for('static', filename='delete_note.js') }}"></script>
+</head>
+<body>
+    <div class="container">
+        <h1>Notes</h1>
+            {% if message %}
+        <p class="message">{{ message }}</p>
+    {% endif %}
+    <ul>
+        {% for note in notes %}
+            <li>
+                <a href="{{ url_for('get_note', id=note.id) }}">{{ note.title }}</a>
+                <span class="timestamp">{{ note.date_created|datetimeformat }}</span>
+                <button type="button" class="delete-note" data-note-id="{{ note.id }}">Delete Note</button>
+            </li>
+        {% endfor %}
+    </ul>
+    <form method="post" action="{{ url_for('add_note') }}">
+        {{ form.csrf_token }}
+
+        <div class="form-group">
+            {{ form.title.label }} {{ form.title }}
+        </div>
+
+        <div class="form-group">
+            {{ form.content.label }} {{ form.content }}
+        </div>
+
+        <div class="form-group">
+            <button type="submit">Add Note</button>
+        </div>
+    </form>
+</div>
+<script>
+    var deleteButtons = document.querySelectorAll('.delete-note');
+    deleteButtons.forEach(function(button) {
+        button.addEventListener('click', function(event) {
+            var noteId = event.target.getAttribute('data-note-id');
+            var xhr = new XMLHttpRequest();
+            xhr.open('DELETE', '/notes/' + noteId, true);
+            xhr.setRequestHeader('Content-Type', 'application/json');
+            xhr.onreadystatechange = function() {
+                if (xhr.readyState === 4) {
+                    if (xhr.status === 204) {
+                        window.location.reload();
+                    } else {
+                        console.log('Error deleting note');
+                    }
+                }
+            };
+            xhr.send();
+        });
+    });
+</script>
+</body>
+</html>
+
